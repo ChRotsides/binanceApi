@@ -1,6 +1,6 @@
-
-#include "global.hpp"
 #include <curl/curl.h>
+#include <string.h>
+#include <iostream>
 #include <string>
 #include <openssl/hmac.h>
 #include <sstream>
@@ -43,12 +43,14 @@ public:
     std::string getPrice(std::string symbol);
     std::string placeOrder(std::string symbol,std::string side,std::string type,float price,float quantity,std::string timeInForce);
     std::string placeOrder(std::string symbol,std::string side,std::string type,float price,float quantity,std::string timeInForce,float stopPrice);
+    std::string placeOrder(std::string symbol,std::string side,std::string type,float quantity);
     std::string cancelOrder(std::string symbol,long long orderId);
     std::string cancelOrder(std::string symbol,long long orderId,std::string origClientOrderId);
     std::string getKlines(std::string symbol,std::string interval,int64_t startTime,int64_t endTime,int limit);
     std::string getKlines(std::string symbol,std::string interval,int64_t startTime,int64_t endTime);
     std::string getKlines(std::string symbol,std::string interval);
     std::string getExchangeInfo(std::string symbol);
+    std::string getBook(std::string symbol);
     // std::string getLastResponse();
     
 

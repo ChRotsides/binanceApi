@@ -160,7 +160,7 @@ void BAPI::sendPublicRequest(std::string urlPath,std::string &response) {
     // std::cout << "url:" << url << "\n";
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    std::cout<<url<<"\n";
+    // std::cout<<url<<"\n";
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 	parameters.clear();
 	executeHTTPRequest();
@@ -183,6 +183,18 @@ std::string BAPI::placeOrder(std::string symbol,std::string side,std::string typ
     std::cout<<"Sent Price: "<<stream.str()<<"\n";
 
     parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",std::to_string(quantity)},{"price",stream.str()},{"timeInForce",timeInForce}});
+    std::string response;
+    sendSignedRequest("POST","/api/v3/order",response);
+
+    return response;
+}
+
+std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,float quantity){
+    parameters.clear();
+    std::stringstream stream;
+    stream.clear();
+
+    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",std::to_string(quantity)}});
     std::string response;
     sendSignedRequest("POST","/api/v3/order",response);
 
@@ -246,9 +258,9 @@ std::string BAPI::getPrice(std::string symbol){
 
     std::string reqUrl;
     std::string response;
-
+    parameters.clear();
     if(symbol==""){
-       sendPublicRequest("api/v3/ticker/price",response);
+       sendPublicRequest("/api/v3/ticker/price",response);
     }else{
         parameters.insert({"symbol",symbol});
         sendPublicRequest("/api/v3/ticker/price",response);
@@ -340,6 +352,20 @@ std::string BAPI::getExchangeInfo(std::string symbol){
         parameters.insert({"symbol",symbol});
     }
     sendPublicRequest("/api/v3/exchangeInfo",response);
+    return response;
+
+
+}
+
+
+std::string BAPI::getBook(std::string symbol){
+
+    std::string response;
+    parameters.clear();
+    if(symbol!=""){
+        parameters.insert({"symbol",symbol});
+    }
+    sendPublicRequest("/api/v3/ticker/bookTicker",response);
     return response;
 
 
