@@ -243,7 +243,6 @@ std::string BAPI::getFee(std::string symbol){
 std::string BAPI::getAccountInfo(){
     std::string response;
     parameters.clear();
-    parameters.insert({"timestamp",std::to_string(getTimeStamp())});
     sendSignedRequest("GET","/api/v3/account",response);
 
     return response;
