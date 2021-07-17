@@ -51,6 +51,7 @@ public:
     std::string getKlines(std::string symbol,std::string interval);
     std::string getExchangeInfo(std::string symbol);
     std::string getBook(std::string symbol);
+    std::string getAccountInfo();
     // std::string getLastResponse();
     
 
