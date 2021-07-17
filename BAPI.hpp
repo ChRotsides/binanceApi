@@ -41,9 +41,9 @@ public:
     std::string getFee(std::string symbol);
     std::string getSignature(std::string queryString);
     std::string getPrice(std::string symbol);
-    std::string placeOrder(std::string symbol,std::string side,std::string type,float price,float quantity,std::string timeInForce);
-    std::string placeOrder(std::string symbol,std::string side,std::string type,float price,float quantity,std::string timeInForce,float stopPrice);
-    std::string placeOrder(std::string symbol,std::string side,std::string type,float quantity);
+    std::string placeOrder(std::string symbol,std::string side,std::string type,float price,std::string quantity,std::string timeInForce);
+    std::string placeOrder(std::string symbol,std::string side,std::string type,float price,std::string quantity,std::string timeInForce,float stopPrice);
+    std::string placeOrder(std::string symbol,std::string side,std::string type,std::string quantity);
     std::string cancelOrder(std::string symbol,long long orderId);
     std::string cancelOrder(std::string symbol,long long orderId,std::string origClientOrderId);
     std::string getKlines(std::string symbol,std::string interval,int64_t startTime,int64_t endTime,int limit);

@@ -175,40 +175,40 @@ std::string BAPI::getServerTime(){
 }
 
 // /api/v3/ticker/price
-std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,float price,float quantity,std::string timeInForce){
+std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,float price,std::string quantity,std::string timeInForce){
     parameters.clear();
     std::stringstream stream;
     stream.clear();
     stream<<std::setprecision(5)<<price;
     std::cout<<"Sent Price: "<<stream.str()<<"\n";
 
-    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",std::to_string(quantity)},{"price",stream.str()},{"timeInForce",timeInForce}});
+    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",(quantity)},{"price",stream.str()},{"timeInForce",timeInForce}});
     std::string response;
     sendSignedRequest("POST","/api/v3/order",response);
 
     return response;
 }
 
-std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,float quantity){
+std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,std::string quantity){
     parameters.clear();
     std::stringstream stream;
     stream.clear();
 
-    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",std::to_string(quantity)}});
+    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",quantity}});
     std::string response;
     sendSignedRequest("POST","/api/v3/order",response);
 
     return response;
 }
 
-std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,float price,float quantity,std::string timeInForce,float stopPrice){
+std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,float price,std::string quantity,std::string timeInForce,float stopPrice){
     parameters.clear();
     std::stringstream stream;
     stream.clear();
     stream<<std::setprecision(5)<<price;
     std::cout<<"Sent Price: "<<stream.str()<<"\n";
 
-    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",std::to_string(quantity)},{"price",stream.str()},{"timeInForce",timeInForce},{"stopPrice",std::to_string(stopPrice)}});
+    parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",(quantity)},{"price",stream.str()},{"timeInForce",timeInForce},{"stopPrice",std::to_string(stopPrice)}});
     std::string response;
     sendSignedRequest("POST","/api/v3/order",response);
 
