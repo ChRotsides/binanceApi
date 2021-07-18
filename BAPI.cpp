@@ -135,12 +135,14 @@ void BAPI::sendSignedRequest(std::string httpMethod,std::string urlPath,std::str
     data.size=0;
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
     if(httpMethod=="POST"){
+        curl_easy_setopt(curl,CURLOPT_HTTPGET,false);
         curl_easy_setopt(curl, CURLOPT_URL, (baseUrl + urlPath).c_str());
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, queryString.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 		parameters.clear();
 		executeHTTPRequest();
     }else {
+        curl_easy_setopt(curl,CURLOPT_HTTPGET,true);
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
 		executeHTTPRequest();
@@ -158,6 +160,7 @@ void BAPI::sendPublicRequest(std::string urlPath,std::string &response) {
     	url += joinQueryParameters();
     }
     // std::cout << "url:" << url << "\n";
+    curl_easy_setopt(curl,CURLOPT_HTTPGET,true);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
     curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
     // std::cout<<url<<"\n";
@@ -191,8 +194,6 @@ std::string BAPI::placeOrder(std::string symbol,std::string side,std::string typ
 
 std::string BAPI::placeOrder(std::string symbol,std::string side,std::string type,std::string quantity){
     parameters.clear();
-    std::stringstream stream;
-    stream.clear();
 
     parameters.insert({{"symbol",symbol},{"side",side},{"type",type},{"quantity",quantity}});
     std::string response;
