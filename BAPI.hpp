@@ -8,6 +8,17 @@
 #include <unordered_map>
 #include <iomanip>
 #include <chrono>
+#include "./root_certificates.hpp"
+#include <boost/beast/core.hpp>
+#include <boost/beast/ssl.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
+#include <boost/asio/connect.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/stream.hpp>
+// #include <pthread.h>
+#include <thread>
+#include <vector>
 
 #define MILLIS_IN_A_DAY 86400000
 #define MILLIS_IN_AN_HOUR 3600000
@@ -21,9 +32,13 @@ private:
     CURLcode res;
     std::string API_KEY;
     std::string API_SECRET;
+    std::string websocket_host = "stream.binance.com";
+    std::string websocket_port = "9443";
     const std::string baseUrl = "https://api.binance.com";
     std::string gs_strLastResponse;
     struct curl_slist *chunk = NULL;
+    std::vector<pthread_t> tids;
+    std::vector<boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>*> active_websockets;
 
 public:
     BAPI(/* args */);
@@ -52,6 +67,9 @@ public:
     std::string getExchangeInfo(std::string symbol);
     std::string getBook(std::string symbol);
     std::string getAccountInfo();
+    void stream_reader(BAPI* myInstance,boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* websock);
+    void subscribeToWebsocket(std::string streamName);
+
     // std::string getLastResponse();
     
 

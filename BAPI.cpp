@@ -378,3 +378,66 @@ std::string BAPI::getBook(std::string symbol){
 
 
 }
+void BAPI::stream_reader(BAPI* myInstance,boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* webS){
+    // This buffer will hold the incoming message
+    boost::beast::flat_buffer buffer;
+
+    while(1){
+        webS->read(buffer);
+        id++;
+        fout<<beast::make_printable(buffer.data())<<"\n";
+        fout.flush();
+        buffer.clear();
+    }
+    fout.close();
+    return NULL;
+
+
+}
+void BAPI::subscribeToWebsocket(std::string streamName){
+    namespace beast = boost::beast;         // from <boost/beast.hpp>
+    namespace http = beast::http;           // from <boost/beast/http.hpp>
+    namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
+    namespace net = boost::asio;            // from <boost/asio.hpp>
+    namespace ssl = boost::asio::ssl;       // from <boost/asio/ssl.hpp>
+    using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
+
+    std::string  websocket_start_text = R"({"method": "SUBSCRIBE","params":[")"+streamName+R"("],"id": 0})";
+
+    net::io_context ioc;
+    ssl::context ctx{ssl::context::tlsv12_client};
+
+    load_root_certificates(ctx);
+
+    tcp::resolver resolver{ioc};
+    websocket::stream<beast::ssl_stream<tcp::socket>> *ws=new websocket::stream<beast::ssl_stream<tcp::socket>>{ioc, ctx};
+    
+    auto const results = resolver.resolve(websocket_host, websocket_port);
+    
+    net::connect(ws->next_layer().next_layer(), results.begin(), results.end());
+
+    ws->next_layer().handshake(ssl::stream_base::client);
+
+    ws->set_option(websocket::stream_base::decorator(
+        [](websocket::request_type& req)
+        {
+            req.set(http::field::user_agent,
+                std::string(BOOST_BEAST_VERSION_STRING) +
+                    " websocket-client-coro");
+        }));
+
+    websocket::stream_base::timeout tm={std::chrono::seconds(30),std::chrono::seconds(3),false};
+    ws->handshake(websocket_host, "/ws/"+streamName);
+    ws->set_option(tm);
+    // Send the message
+    ws->write(net::buffer(std::string(websocket_start_text)));
+
+    // pthread_t *reader_thread;
+    // pthread_create(reader_thread,NULL,stream_reader,ws); 
+    
+    std::thread new_thread(stream_reader,ws,this);
+
+
+
+}
+
