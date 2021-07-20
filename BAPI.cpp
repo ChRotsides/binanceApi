@@ -41,6 +41,15 @@ BAPI::~BAPI(){
         
     curl_easy_cleanup(curl);
     curl_global_cleanup();
+    std::string  end_text = R"({"method": "UNSUBSCRIBE","params":["btceur@bookTicker"],"id": 1"})";
+
+    for(int i=0; i<active_websockets.size(); i++){
+
+        active_websockets[i]->write(end_text);
+
+    }
+
+
 }
 // size_t BAPI::WriteCallback(char *contents, size_t size, size_t nmemb, void *userp) {
 
@@ -378,19 +387,8 @@ std::string BAPI::getBook(std::string symbol){
 
 
 }
-
-void BAPI::stream_reader(BAPI* myInstance,boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* webS){
-    // This buffer will hold the incoming message
-    boost::beast::flat_buffer buffer;
-    
-    while(1){
-        webS->read(buffer);
-        
-        buffer.clear();
-    }
-
-}
-void BAPI::subscribeToWebsocket(std::string streamName){
+//return pointer to a boost::beast websocket stream
+boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* BAPI::subscribeToWebsocket(std::string streamName){
     namespace beast = boost::beast;         // from <boost/beast.hpp>
     namespace http = beast::http;           // from <boost/beast/http.hpp>
     namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
@@ -427,13 +425,8 @@ void BAPI::subscribeToWebsocket(std::string streamName){
     ws->set_option(tm);
     // Send the message
     ws->write(net::buffer(std::string(websocket_start_text)));
-
-    // pthread_t *reader_thread;
-    // pthread_create(reader_thread,NULL,stream_reader,ws); 
-    
-    std::thread new_thread(stream_reader,ws,this);
-
-
+    active_websockets.push_back(ws);
+    return ws;
 
 }
 

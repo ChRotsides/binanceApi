@@ -67,11 +67,7 @@ public:
     std::string getExchangeInfo(std::string symbol);
     std::string getBook(std::string symbol);
     std::string getAccountInfo();
-    void stream_reader(BAPI* myInstance,boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* websock);
-    void subscribeToWebsocket(std::string streamName);
-
-    // std::string getLastResponse();
-    
+    boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* subscribeToWebsocket(std::string streamName);
 
 
 
