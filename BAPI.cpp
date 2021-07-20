@@ -378,20 +378,16 @@ std::string BAPI::getBook(std::string symbol){
 
 
 }
+
 void BAPI::stream_reader(BAPI* myInstance,boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* webS){
     // This buffer will hold the incoming message
     boost::beast::flat_buffer buffer;
-
+    
     while(1){
         webS->read(buffer);
-        id++;
-        fout<<beast::make_printable(buffer.data())<<"\n";
-        fout.flush();
+        
         buffer.clear();
     }
-    fout.close();
-    return NULL;
-
 
 }
 void BAPI::subscribeToWebsocket(std::string streamName){
