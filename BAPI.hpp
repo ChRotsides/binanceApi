@@ -20,7 +20,8 @@
 // #include <pthread.h>
 #include <thread>
 #include <vector>
-
+#ifndef BAPI_H
+#define BAPI_H
 #define MILLIS_IN_A_DAY 86400000
 #define MILLIS_IN_AN_HOUR 3600000
 #define MILLIS_IN_A_MINUTE 60000
@@ -76,4 +77,4 @@ public:
 
 };
 
-
+#endif
