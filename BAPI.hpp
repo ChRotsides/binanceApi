@@ -16,6 +16,7 @@
 #include <boost/asio/connect.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/stream.hpp>
+#include <cstdlib>
 // #include <pthread.h>
 #include <thread>
 #include <vector>
@@ -37,7 +38,8 @@ private:
     const std::string baseUrl = "https://api.binance.com";
     std::string gs_strLastResponse;
     struct curl_slist *chunk = NULL;
-    std::vector<pthread_t> tids;
+    std::vector<std::string> streamNames;
+
     std::vector<boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>*> active_websockets;
 
 public:
@@ -68,6 +70,7 @@ public:
     std::string getBook(std::string symbol);
     std::string getAccountInfo();
     boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* subscribeToWebsocket(std::string streamName);
+    void endWebSocketConnections();
 
 
 

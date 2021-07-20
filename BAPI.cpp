@@ -5,8 +5,6 @@ struct package{
     size_t size;
 };
 
-
-
 size_t WriteCallback(void *ptr, size_t size, size_t count, void *data){
 
 
@@ -41,13 +39,9 @@ BAPI::~BAPI(){
         
     curl_easy_cleanup(curl);
     curl_global_cleanup();
-    std::string  end_text = R"({"method": "UNSUBSCRIBE","params":["btceur@bookTicker"],"id": 1"})";
+    
 
-    for(int i=0; i<active_websockets.size(); i++){
-
-        active_websockets[i]->write(end_text);
-
-    }
+    endWebSocketConnections();//free and send end message to websockets
 
 
 }
@@ -387,6 +381,18 @@ std::string BAPI::getBook(std::string symbol){
 
 
 }
+void BAPI::endWebSocketConnections(){
+    for(int i=active_websockets.size()-1; i>=0; i--){
+        std::string  end_text = R"({"method": "UNSUBSCRIBE","params":[")"+streamNames[i]+R"("],"id": 1})";
+        std::cout<<end_text<<"\n";
+        active_websockets[i]->write(boost::beast::net::buffer(std::string(end_text)));
+        free(active_websockets[i]);
+        active_websockets.pop_back();
+        streamNames.pop_back();
+    }
+}
+
+
 //return pointer to a boost::beast websocket stream
 boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* BAPI::subscribeToWebsocket(std::string streamName){
     namespace beast = boost::beast;         // from <boost/beast.hpp>
@@ -426,7 +432,7 @@ boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::s
     // Send the message
     ws->write(net::buffer(std::string(websocket_start_text)));
     active_websockets.push_back(ws);
+    streamNames.push_back(streamName);
     return ws;
-
 }
 
