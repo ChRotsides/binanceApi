@@ -391,7 +391,26 @@ void BAPI::endWebSocketConnections(){
         streamNames.pop_back();
     }
 }
+void BAPI::endWebSocketConnection(std::string streamName){
+    int index=-1;
+    for(int i=0; i<streamNames.size(); i++){
+        if(streamNames[i]==streamName){
+            index=i;
+            break;
+        }
+    }
+    if(index==-1){
+        std::__throw_invalid_argument(("Stream: "+streamName+" not found\n").c_str());
+    }else{
+        std::string  end_text = R"({"method": "UNSUBSCRIBE","params":[")"+streamName+R"("],"id": 1})";
+        active_websockets[index]->write(boost::beast::net::buffer(std::string(end_text)));
+        free(active_websockets[index]);
+        active_websockets.erase(active_websockets.begin()+index);
+        streamNames.erase(streamNames.begin()+index);
+    }
 
+
+}
 
 //return pointer to a boost::beast websocket stream
 boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* BAPI::subscribeToWebsocket(std::string streamName){

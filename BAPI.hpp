@@ -39,7 +39,7 @@ private:
     std::string gs_strLastResponse;
     struct curl_slist *chunk = NULL;
     std::vector<std::string> streamNames;
-
+    void endWebSocketConnections();
     std::vector<boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>*> active_websockets;
 
 public:
@@ -70,7 +70,7 @@ public:
     std::string getBook(std::string symbol);
     std::string getAccountInfo();
     boost::beast::websocket::stream<boost::beast::ssl_stream<boost::asio::ip::tcp::socket>>* subscribeToWebsocket(std::string streamName);
-    void endWebSocketConnections();
+    void endWebSocketConnection(std::string streamName);
 
 
 
